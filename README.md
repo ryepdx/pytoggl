@@ -11,10 +11,6 @@ This is work in progress but is already used for internal reporting tools
 at [Good Code](http://goodcode.io/). Patches to improve the functionality
 coverage and quality are welcome!
 
-## Ryepdx's Fork
-
-I'm hoping to improve this code's readability and remove the parts that seem over-engineered to me. I see a few places where objects are used like dictionaries, and I'm hoping to delete as many ELOC as possible and add more complete comment coverage. Good Code has created a good foundation, with short, simple files and class definitions, but I suspect it could be made even simpler and shorter.
-
 ## Installation
 
 Install via pip:
