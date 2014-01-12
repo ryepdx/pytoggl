@@ -1,39 +1,9 @@
 from datetime import datetime, date
 
+from goodcode import Dictionary
 from .session import Session
 
 __all__ = ['Reports']
-
-
-class Node(object):
-
-    def __init__(self, **attribs):
-        for k, v in attribs.iteritems():
-            if isinstance(v, list):
-                attribs[k] = [el if isinstance(el, Node) else Node(**el)
-                    for el in v]
-            elif isinstance(v, dict):
-                attribs[k] = v if isinstance(v, Node) else Node(**v)
-        self.__dict__.update(attribs)
-
-    @property
-    def keys(self):
-        return self.__dict__.keys()
-
-    def __unicode__(self):
-        if hasattr(self, '_unicode_value'):
-            if self._unicode_value is None:
-                return '(none)'
-            else:
-                return self._unicode_value
-        else:
-            return super(Node, self).__unicode__()
-
-    def __str__(self):
-        return unicode(self).encode('utf-8')
-
-    def __contains__(self, key):
-        return key in self.__dict__
 
 
 class Reports(object):
@@ -69,11 +39,11 @@ class Reports(object):
         params['user_agent'] = self.USER_AGENT
 
         data = self.session.get(type, **params)
-        return Node(**data)
+        return Dictionary(**data)
 
     @classmethod
     def _get_totals(cls, data):
-        return Node(
+        return Dictionary(
             grand=data.total_grand // 1000,
             grand_hm=cls._ms_to_hm(data.total_grand),
             billable=data.total_billable // 1000,
@@ -113,7 +83,7 @@ class Reports(object):
         for group_data in data.data:
             subgroups = []
             for subgroup_data in group_data.items:
-                subgroups.append(Node(
+                subgroups.append(Dictionary(
                     _unicode_value=_get_title(subgroup_data.title),
                     title=_get_title(subgroup_data.title),
                     time=subgroup_data.time // 1000,
@@ -121,7 +91,7 @@ class Reports(object):
                     currency=subgroup_data.cur,
                     amount=subgroup_data.sum,
                     rate=subgroup_data.rate))
-            groups.append(Node(
+            groups.append(Dictionary(
                 _unicode_value=_get_title(group_data.title),
                 id=group_data.id,
                 title=_get_title(group_data.title),
@@ -130,4 +100,4 @@ class Reports(object):
                 currencies=group_data.total_currencies,
                 subgroups=subgroups))
 
-        return Node(total=self._get_totals(data), groups=groups)
+        return Dictionary(total=self._get_totals(data), groups=groups)
